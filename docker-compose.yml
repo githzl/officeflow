@@ -1,0 +1,120 @@
+version: "3"
+services:
+    nginx:
+        build: 
+            context: ./services/nginx
+            args: 
+                NGINX_IMAGE_VERSION: nginx:${NGINX_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}nginx
+        environment:
+            TZ: ${GLOBAL_TZ}
+        ports:
+            - "${NGINX_HTTP_PORT}:${NGINX_HTTP_PORT}"
+        volumes:
+            - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
+            - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+            - ${NGINX_FASTCGI_CONF_FILE}:/etc/nginx/fastcgi.conf:ro
+            - ${GLOBAL_SOURCE_DIR}:/www/:rw
+            - ${GLOBAL_UPLOAD_DIR}:/data/:rw
+        extra_hosts:
+            - "${NGINX_PROJECT_DOMAIN}:127.0.0.1"
+            - "${NGINX_PROJECT_IMGDOMAIN}:127.0.0.1"
+        networks:
+            officeflow:
+                aliases: 
+                    - nginx
+
+    php:
+        build: 
+            context: ./services/php
+            args:
+                PHP_IMAGE_VERSION: ${PHP_IMAGE_VERSION}
+        environment:
+            TZ: ${GLOBAL_TZ}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}php
+        volumes: 
+            - ${PHP_LOG_DIR}:/var/log/:rw
+            - ${PHP_FPM_CONF}:/usr/local/etc/php-fpm.d/www.conf:rw
+            - ${PHP_INI_CONF}:/usr/local/etc/php/php.ini:rw
+            - ${GLOBAL_SOURCE_DIR}:/www/:ro
+            - ${GLOBAL_UPLOAD_DIR}:/data/:rw
+        expose: 
+            - ${PHP_FPM_PORT}
+        networks:
+            officeflow:
+                aliases: 
+                    - php
+
+    redis:
+        image: ${REDIS_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}redis
+        ports:
+            - ${REDIS_PORT}:${REDIS_PORT}
+        expose: 
+            - ${REDIS_PORT}
+        environment:
+            TZ: ${GLOBAL_TZ}
+        volumes:
+            - ${REDIS_CONF_FILE}:/etc/redis.conf/:ro
+            - ${REDIS_LOG_FILE}:/var/log/redis.log:rw
+            - ${REDIS_DATA_DIR}:/data
+        command:
+            redis-server /etc/redis.conf # 如果启动不了检测下配置文件对不对，并且把daemonize设置no
+        networks:
+            officeflow:
+                aliases: 
+                    - redis
+
+    postgres:
+        image: ${POSTGRES_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}postgres
+        ports: 
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
+        environment:
+            POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+            PGDATA: ${POSTGRES_DATA_DIR}
+            TZ: ${GLOBAL_TZ}
+        volumes:
+            - ${POSTGRES_DATA_DIR}:/data/postgres:rw
+            - ${POSTGRES_CONF_FILE}:/data/postgres/postgresql.conf
+        networks: 
+            officeflow:
+                aliases: 
+                    - postgres
+    
+    mysql:
+        image: ${MYSQL_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}mysql
+        ports: 
+            - ${MYSQL_PORT}:${MYSQL_PORT}
+        volumes:
+            - ${MYSQL_DATA_DIR}:/var/lib/mysql:rw
+            - ${MYSQL_CONF_FILE}:/etc/my.cnf:ro
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            TZ: ${GLOBAL_TZ}
+        networks: 
+            officeflow:
+                aliases: 
+                    - mysql
+    
+    tomcat:
+        image: ${TOMCAT_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}tomcat
+        ports: 
+            - ${TOMCAT_PORT}:${TOMCAT_PORT}
+        expose: 
+            - ${TOMCAT_PORT}
+        volumes:
+            - ${TOMCAT_SERVER_FILE}:/usr/local/tomcat/conf/server.xml:ro
+            - ${GLOBAL_SOURCE_DIR}/activiti6:/usr/local/tomcat/webapps:rw
+        extra_hosts:
+            - "${TOMCAT_PROJECT_DOMAIN}:127.0.0.1"
+        environment:
+            TZ: ${GLOBAL_TZ}
+        networks: 
+            officeflow:
+                aliases: 
+                    - tomcat
+networks: 
+    officeflow:
