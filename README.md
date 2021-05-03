@@ -8,5 +8,12 @@ cp env.example .env
 ```php
 docker-compose up
 ```
+3.MySQL导入activiti6库，PostgreSQL导入officeflow库
+
+```php
+Notice:
+如果tomcat启动报错请先自行构建容器，导入activiti6库
+```
+
 
 
