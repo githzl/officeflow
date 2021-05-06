@@ -12,7 +12,7 @@ docker-compose up
 
 ```php
 Notice:
-如果tomcat启动报错请先自行构建容器，导入activiti6库
+如果tomcat启动报错请先自行构建MySQL容器，导入activiti6库
 ```
 
 
