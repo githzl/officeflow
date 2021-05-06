@@ -4,7 +4,7 @@ services:
         build: 
             context: ./services/nginx
             args: 
-                NGINX_IMAGE_VERSION: nginx:${NGINX_IMAGE_VERSION}
+                NGINX_IMAGE_VERSION: ${NGINX_IMAGE_VERSION}
         container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}nginx
         environment:
             TZ: ${GLOBAL_TZ}
@@ -72,11 +72,11 @@ services:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         environment:
             POSTGRES_USERNAME: ${POSTGRES_USERNAME}
-            PGDATA: ${POSTGRES_DATA_DIR}
+            PGDATA: /var/lib/postgresql/pg_data
             TZ: ${GLOBAL_TZ}
         volumes:
-            - ${POSTGRES_DATA_DIR}:/data/postgres:rw
-            - ${POSTGRES_CONF_FILE}:/data/postgres/postgresql.conf
+            - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/pg_data:rw
+            - ${POSTGRES_CONF_FILE}:/var/lib/postgresql/data/postgresql.conf:ro
         networks: 
             officeflow:
                 aliases: 
