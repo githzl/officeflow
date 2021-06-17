@@ -37,6 +37,12 @@ WORKDIR /tmp/extensions
 #     && docker-php-ext-enable pdo_pgsql \
 #     && docker-php-source delete
 
+# exif
+# docker-php-source extract \
+#    && docker-php-ext-install exif \
+#    && docker-php-ext-enable exif \
+#    && docker-php-source delete
+
 # gd
 # RUN apk --update add --no-cache libpng-dev libpng libwebp libwebp-dev libjpeg-turbo-dev freetype-dev \
 #     && docker-php-source extract \
