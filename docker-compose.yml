@@ -116,5 +116,16 @@ services:
             officeflow:
                 aliases: 
                     - tomcat
+    golang:
+        image: ${GOLANG_IMAGE_VERSION}
+        container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}golang
+        ports: 
+            - ${GOLANG_PORT}:${GOLANG_PORT}
+        expose: 
+            - ${GOLANG_PORT}
+        networks: 
+            officeflow:
+                aliases: 
+                    - golang
 networks: 
     officeflow:
