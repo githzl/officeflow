@@ -1,4 +1,3 @@
 *.log
-logs/php/logs/error.log
 data
 .env
