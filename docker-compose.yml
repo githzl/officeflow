@@ -121,8 +121,13 @@ services:
         container_name: ${GLOBAL_CONTAINER_NAME_PREFIX}golang
         ports: 
             - ${GOLANG_PORT}:${GOLANG_PORT}
-        expose: 
+        volumes:
+            - ${GOLANG_CONFIG}:/go/src/main.yaml:ro
+            - ${GOLANG_MAIN}:/go/src/main:rw
+        expose:
             - ${GOLANG_PORT}
+        command:
+            /go/src/main # 该可执行文件是linux上运行的，所以用这个命令：CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
         networks: 
             officeflow:
                 aliases: 
